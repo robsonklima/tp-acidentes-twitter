@@ -1,7 +1,14 @@
 import tweepy
 from tweepy import OAuthHandler
-import csv
-import json
+import mysql.connector
+
+config = {
+  'user': 'root',
+  'password': 'Mysql@2018',
+  'host': '127.0.0.1',
+  'database': 'crashs',
+  'raise_on_warnings': True
+}
 
 consumer_key = 'dFii2e07Tw0VaXmSuX8h6tzrz'
 consumer_secret = 'KwatSfBx7fMaak286PlLQMN9OmmhYopfm042CPTPEjxLOy6PPz'
@@ -15,12 +22,18 @@ api = tweepy.API(auth)
 new_york_geo = "40.789501,-73.976775,150km"
 porto_alegre_geo = "-30.030924,-51.227636,50km"
 
-tweets = api.search(q="Porto Alegre", geocode = porto_alegre_geo, count=100)
+tweets_api = api.search(q="Acidente", geocode = porto_alegre_geo, count=100)
 
-#for tweet in tweets:
-    #csvFile = open('tweets.csv', 'a')
-    #csvWriter = csv.writer(csvFile)
-    #csvWriter.writerow({tweet.text.encode('utf-8')})
-    #print(tweet._json)
-    ##with open('tweets.json', 'w') as outfile:
-        ##json.dump(tweet._json, outfile)
+for tweet in tweets_api:
+    if tweet.geo:        
+        print(tweet.text)
+        
+        cnx = mysql.connector.connect(**config)
+        x = cnx.cursor()
+        try:
+           #x.execute("""INSERT INTO accidents (date_time_occured,latitude,longitude,is_open_data,is_twitter) VALUES (%s,%s,%s,%s,%s)""",(tweet.created_at,tweet.geo['coordinates'][0],tweet.geo['coordinates'][1],0,1))
+           cnx.commit()
+        except:
+           cnx.rollback()
+        x.close()
+        cnx.close()

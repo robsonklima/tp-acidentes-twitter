@@ -15,7 +15,7 @@ with open('acidentes-2016.csv', 'r') as csvfile:
         cnx = mysql.connector.connect(**config)
         x = cnx.cursor()
         try:
-           x.execute("""INSERT INTO accidents (date_time_occured, latitude, longitude) VALUES (%s,%s,%s)""",(row['DATA_HORA'],row['LATITUDE'],row['LONGITUDE']))
+           x.execute("""INSERT INTO accidents (date_time_occured,latitude,longitude,is_open_data,is_twitter) VALUES (%s,%s,%s,%s,%s)""",(row['DATA_HORA'],row['LATITUDE'],row['LONGITUDE'],1,0))
            cnx.commit()
         except:
            cnx.rollback()
